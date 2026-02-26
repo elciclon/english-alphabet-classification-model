@@ -109,17 +109,40 @@ plt.grid()
 plt.show()
 
 #%% Elegimos 3 atributos
-atributos_relevantes = 10 * 28 + 21
-columnas = []
-for i in range(atributos_relevantes, atributos_relevantes + 3):
-    columnas.append('pixel ' + str(i))
-    
-clasificador = KNeighborsClassifier(n_neighbors=5)
-clasificador.fit(X_train[columnas].values, y_train.values)
+def knn_clasificador(lista_de_atributos, k):
+    columnas = ['pixel ' + str(atributo) for atributo in lista_de_atributos]
+    clasificador = KNeighborsClassifier(n_neighbors=k)
+    clasificador.fit(X_train[columnas].values, y_train.values)
+    y_pred = clasificador.predict(X_test[columnas].values)
+    exactitud = accuracy_score(y_test.values, y_pred)
+    matriz = confusion_matrix(y_test.values, y_pred)
+    return (exactitud, matriz)
 
-#%% Predicción
-y_pred = clasificador.predict(X_test[columnas].values)
-exactitud = accuracy_score(y_test.values, y_pred)
-matriz = confusion_matrix(y_test.values, y_pred)
+#%% Probamos casos
+exactitud, matriz = knn_clasificador([0, 1, 2], 5) #caso de control
+print(exactitud)
+print(matriz)
 
+
+# ELegimos 10(filas) * 28(columnas) + 21(columna específica, elegida por mapa) 
+exactitud, matriz = knn_clasificador([301, 302, 303], 5) #Elegido por mapa
+print(exactitud)
+print(matriz)
+
+exactitud, matriz = knn_clasificador([299, 300, 301], 5) #Elegido por mapa
+print(exactitud)
+print(matriz)
+
+exactitud, matriz = knn_clasificador([299-28, 300-28, 301-28], 5) #line up
+print(exactitud)
+print(matriz)
+
+exactitud, matriz = knn_clasificador([299+28, 300+28, 301+28], 5) #line down
+print(exactitud)
+print(matriz)
     
+exactitud, matriz = knn_clasificador([299+56, 300+56, 301+56], 5) # 2 line down
+print(exactitud)
+print(matriz)
+
+
