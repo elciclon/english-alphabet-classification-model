@@ -13,9 +13,12 @@ Este archivo incluye todo el código para realizar el análisis exploratorio
 """
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
 import numpy as np
+from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import train_test_split
 
+#%% Cargamos el csv
 
 letras_df = pd.read_csv('TP02-EnglishTypeAlphabet.csv')
 
@@ -28,15 +31,15 @@ print(f"Cantidad total de atributos: {n_columnas}")
 
 """ Constatamos que para cada letra hay 1016 variantes. La clase está dada por
 la etiqueta label, hay 26416 filas y 785 atributos(incluyendo label)"""
+letras = "abcdefghijklmnopqrstuvwxyz"
 
 for i in range(26):
     cantidad_de_variantes = (letras_df['label'] == i).sum()
-    print(f"La clase {i} tiene {cantidad_de_variantes} variantes")
+    print(f"La clase {letras[i]} ({i}) tiene {cantidad_de_variantes} variantes")
 
 #%% Graficamos las letras
 
 primera_variante_por_letra = {}
-letras = "abcdefghijklmnopqrstuvwxyz"
 
 j = 0
 
@@ -47,6 +50,7 @@ for i in range(0,26416,1016):
 
 letras_df_sin_label = letras_df.drop(['label'], axis=1) #Necesario para reshape 
 #Graficamos 5 variantes por letra al azar
+np.random.seed(2)
 for i in range(0, 26416, 1016):
     # 1. Creamos la figura con 5 subplots (1 fila, 5 columnas)
     fig, axes = plt.subplots(1, 5, figsize=(15, 3))
@@ -57,6 +61,7 @@ for i in range(0, 26416, 1016):
         
         # Dibujamos en el subplot correspondiente
         axes[idx_plot].imshow(img, cmap='gray')
+        axes[idx_plot].set_title(f"Imagen {j}") 
         
     plt.show() # Muestra el gráfico con las 5 letras juntas
     
@@ -69,5 +74,52 @@ for i in range(0, 26416, 1016):
     img = np.array(letras_df_sin_label.iloc[i]).reshape((28,28))
     plt.imshow(img, cmap='gray')
     plt.show()
+#%% Creamos un dataset con las O y las L
+letras_OL_df = letras_df[(letras_df['label'] == 14) | (letras_df['label'] == 11)]
+letras_OL_df.reset_index(inplace=True, drop=True)
+
+#%% Separamos train y test
+# 'X' son todas las columnas menos 'label'
+X = letras_OL_df.drop(columns=['label'])
+
+# 'y' es solo la columna 'label'
+y = letras_OL_df['label']
+# Dividimos los datos
+X_train, X_test, y_train, y_test = train_test_split(
+    X, 
+    y, 
+    test_size=0.2,       
+    random_state=2,     
+    stratify=y          
+)
+#%% Creamos mapas de calor para ambas letras
+umbral_negro = 170
+
+# Buscamos las O y L's 'promedio'
+letras_agrupadas_sum = letras_OL_df.groupby('label').sum() // 1016
+
+img = np.array(letras_agrupadas_sum.iloc[0]).reshape((28,28))
+plt.imshow(img, cmap='gray')
+plt.grid()
+plt.show()
+           
+img = np.array(letras_agrupadas_sum.iloc[1]).reshape((28,28))
+plt.imshow(img, cmap='gray')
+plt.grid()
+plt.show()
+
+#%% Elegimos 3 atributos
+atributos_relevantes = 10 * 28 + 21
+columnas = []
+for i in range(atributos_relevantes, atributos_relevantes + 3):
+    columnas.append('pixel ' + str(i))
+    
+clasificador = KNeighborsClassifier(n_neighbors=5)
+clasificador.fit(X_train[columnas].values, y_train.values)
+
+#%% Predicción
+y_pred = clasificador.predict(X_test[columnas].values)
+exactitud = accuracy_score(y_test.values, y_pred)
+matriz = confusion_matrix(y_test.values, y_pred)
 
     
