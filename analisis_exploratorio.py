@@ -109,66 +109,56 @@ plt.grid()
 plt.show()
 
 #%% Elegimos 3 atributos
-def knn_clasificador(lista_de_atributos, k):
+def evaluar_y_mostrar_knn(lista_de_atributos, k):
     columnas = ['pixel ' + str(atributo) for atributo in lista_de_atributos]
     clasificador = KNeighborsClassifier(n_neighbors=k)
     clasificador.fit(X_train[columnas].values, y_train.values)
     y_pred = clasificador.predict(X_test[columnas].values)
     exactitud = accuracy_score(y_test.values, y_pred)
     matriz = confusion_matrix(y_test.values, y_pred)
+    print('*'*25,
+        f"knn con pixeles {lista_de_atributos} y k={k}",
+        f"Exactitud: {round(exactitud, 3)}",
+        "matriz de confusion:",
+        matriz,
+        '_'*25,
+        sep='\n')
     return (exactitud, matriz)
 
 #%% Probamos casos
-exactitud, matriz = knn_clasificador([0, 1, 2], 5) #caso de control
-print(exactitud)
-print(matriz)
+_ = evaluar_y_mostrar_knn([0, 1, 2], 5) #caso de control
 
 
 # ELegimos 10(filas) * 28(columnas) + 21(columna específica, elegida por mapa) 
-exactitud, matriz = knn_clasificador([301, 302, 303], 5) #Elegido por mapa
-print(exactitud)
-print(matriz)
+_ = evaluar_y_mostrar_knn([301, 302, 303], 5) #Elegido por mapa
 
-exactitud, matriz = knn_clasificador([299, 300, 301], 5) #Desplazado a la izq.
-print(exactitud)
-print(matriz)
+_ = evaluar_y_mostrar_knn([299, 300, 301], 5) #Desplazado a la izq.
 
-exactitud, matriz = knn_clasificador([299-28, 300-28, 301-28], 5) #line up
-print(exactitud)
-print(matriz)
+_ = evaluar_y_mostrar_knn([299-28, 300-28, 301-28], 5) #line up
 
-exactitud, matriz = knn_clasificador([299+28, 300+28, 301+28], 5) #line down
-print(exactitud)
-print(matriz)
-    
-exactitud, matriz = knn_clasificador([299+56, 300+56, 301+56], 5) # 2 line down
-print(exactitud)
-print(matriz)
+_ = evaluar_y_mostrar_knn([299+28, 300+28, 301+28], 5) #line down
+
+_ = evaluar_y_mostrar_knn([299+56, 300+56, 301+56], 5) # 2 line down
+
 #%%
 """Como detectamos que los atributos 299, 300, 301 eran la mejor elección 
 según las métricas, probamos ampliando la cantidad de atributos a 7"""
-exactitud, matriz = knn_clasificador([i for i in range(297,304)], 5)
-print(exactitud)
-print(matriz)
+_ = evaluar_y_mostrar_knn([i for i in range(297,304)], 5)
 
 # Mejoraron las métricas, ampliamos atributos a 11
-exactitud, matriz = knn_clasificador([i for i in range(295,306)], 5)
-print(exactitud)
-print(matriz)
+_ = evaluar_y_mostrar_knn([i for i in range(295,306)], 5)
 
 # Mejoraron las métricas, ampliamos atributos a 15
-exactitud, matriz = knn_clasificador([i for i in range(293,308)], 5)
-print(exactitud) # Detecta el 100% de las 'L'
-print(matriz)
+_ = evaluar_y_mostrar_knn([i for i in range(293,308)], 5) # Detecta el 100% de las 'L'
+
+
 #%% Probamos distintos K's
 
 lista_k = []
 lista_exactitud = []
 
 for k in range(1, 51, 3):
-    exactitud, matriz = knn_clasificador([299, 300, 301], k) 
-    print(exactitud)
-    print(matriz)
+    exactitud, matriz = evaluar_y_mostrar_knn([299, 300, 301], k) 
     lista_k.append(k)
     lista_exactitud.append(exactitud)
     
@@ -185,9 +175,7 @@ lista_k = []
 lista_exactitud = []
 
 for k in range(1, 51, 3):
-    exactitud, matriz = knn_clasificador([i for i in range(293,308)], k) 
-    print(exactitud)
-    print(matriz)
+    exactitud, matriz = evaluar_y_mostrar_knn([i for i in range(293,308)], k) 
     lista_k.append(k)
     lista_exactitud.append(exactitud)
     
