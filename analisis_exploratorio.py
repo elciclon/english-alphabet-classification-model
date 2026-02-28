@@ -129,7 +129,7 @@ exactitud, matriz = knn_clasificador([301, 302, 303], 5) #Elegido por mapa
 print(exactitud)
 print(matriz)
 
-exactitud, matriz = knn_clasificador([299, 300, 301], 5) #Elegido por mapa
+exactitud, matriz = knn_clasificador([299, 300, 301], 5) #Desplazado a la izq.
 print(exactitud)
 print(matriz)
 
@@ -144,5 +144,58 @@ print(matriz)
 exactitud, matriz = knn_clasificador([299+56, 300+56, 301+56], 5) # 2 line down
 print(exactitud)
 print(matriz)
+#%%
+"""Como detectamos que los atributos 299, 300, 301 eran la mejor elección 
+según las métricas, probamos ampliando la cantidad de atributos a 7"""
+exactitud, matriz = knn_clasificador([i for i in range(297,304)], 5)
+print(exactitud)
+print(matriz)
 
+# Mejoraron las métricas, ampliamos atributos a 11
+exactitud, matriz = knn_clasificador([i for i in range(295,306)], 5)
+print(exactitud)
+print(matriz)
 
+# Mejoraron las métricas, ampliamos atributos a 15
+exactitud, matriz = knn_clasificador([i for i in range(293,308)], 5)
+print(exactitud) # Detecta el 100% de las 'L'
+print(matriz)
+#%% Probamos distintos K's
+
+lista_k = []
+lista_exactitud = []
+
+for k in range(1, 51, 3):
+    exactitud, matriz = knn_clasificador([299, 300, 301], k) 
+    print(exactitud)
+    print(matriz)
+    lista_k.append(k)
+    lista_exactitud.append(exactitud)
+    
+plt.figure(figsize=(10, 6))
+plt.plot(lista_k, lista_exactitud, marker='o')
+plt.title('Exactitud del modelo KNN para distintos valores de K')
+plt.xlabel('K')
+plt.ylabel('Exactitud (Accuracy)')
+plt.grid(True, linestyle='--', alpha=0.7)
+
+#%% Probamos distintos K's y más atributos
+
+lista_k = []
+lista_exactitud = []
+
+for k in range(1, 51, 3):
+    exactitud, matriz = knn_clasificador([i for i in range(293,308)], k) 
+    print(exactitud)
+    print(matriz)
+    lista_k.append(k)
+    lista_exactitud.append(exactitud)
+    
+plt.figure(figsize=(10, 6))
+plt.plot(lista_k, lista_exactitud, marker='o')
+plt.title('Exactitud del modelo KNN para distintos valores de K')
+plt.xlabel('K')
+plt.ylabel('Exactitud (Accuracy)')
+plt.grid(True, linestyle='--', alpha=0.7)
+
+""" Observamos que con K=1 la exactitud alcanzada es muy alta, 0,995"""
