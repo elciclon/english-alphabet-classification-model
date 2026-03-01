@@ -153,37 +153,53 @@ _ = evaluar_y_mostrar_knn([i for i in range(293,308)], 5) # Detecta el 100% de l
 
 
 #%% Probamos distintos K's
-
-lista_k = []
-lista_exactitud = []
-
-for k in range(1, 51, 3):
-    exactitud, matriz = evaluar_y_mostrar_knn([299, 300, 301], k) 
-    lista_k.append(k)
-    lista_exactitud.append(exactitud)
+def evaluar_distintos_k(pixeles):
+    lista_k = []
+    lista_exactitud = []
     
-plt.figure(figsize=(10, 6))
-plt.plot(lista_k, lista_exactitud, marker='o')
-plt.title('Exactitud del modelo KNN para distintos valores de K')
-plt.xlabel('K')
-plt.ylabel('Exactitud (Accuracy)')
-plt.grid(True, linestyle='--', alpha=0.7)
+    for k in range(1, 51, 3):
+        exactitud, matriz = evaluar_y_mostrar_knn(pixeles, k) 
+        lista_k.append(k)
+        lista_exactitud.append(exactitud)
+        
+    plt.figure(figsize=(10, 6))
+    plt.plot(lista_k, lista_exactitud, marker='o')
+    plt.title('Exactitud del modelo KNN para distintos valores de K')
+    plt.xlabel('K')
+    plt.ylabel('Exactitud (Accuracy)')
+    plt.grid(True, linestyle='--', alpha=0.7)
+
+#%%
+evaluar_distintos_k([299, 300, 301]) #mejor conjunto de 3, distinto k
 
 #%% Probamos distintos K's y más atributos
+evaluar_distintos_k([i for i in range(293,308)]) #los 15 atributos de antes
 
-lista_k = []
-lista_exactitud = []
-
-for k in range(1, 51, 3):
-    exactitud, matriz = evaluar_y_mostrar_knn([i for i in range(293,308)], k) 
-    lista_k.append(k)
-    lista_exactitud.append(exactitud)
-    
-plt.figure(figsize=(10, 6))
-plt.plot(lista_k, lista_exactitud, marker='o')
-plt.title('Exactitud del modelo KNN para distintos valores de K')
-plt.xlabel('K')
-plt.ylabel('Exactitud (Accuracy)')
-plt.grid(True, linestyle='--', alpha=0.7)
 
 """ Observamos que con K=1 la exactitud alcanzada es muy alta, 0,995"""
+
+#=========================================================
+#%% clasificacion multiclase
+#separamos datos en held-out y dev
+
+# 'X' son todas las columnas menos 'label'
+X = letras_df.drop(columns=['label'])
+
+# 'y' es solo la columna 'label'
+y = letras_df['label']
+# Dividimos los datos
+X_dev, X_held_out, y_dev, y_held_out = train_test_split(
+    X,
+    y,
+    test_size=0.2,
+    random_state=2,
+    stratify=y
+)
+#%%
+
+
+
+
+
+
+
