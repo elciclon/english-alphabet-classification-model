@@ -16,7 +16,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import train_test_split, cross_val_score
 
 #%% Cargamos el csv
 
@@ -168,6 +169,7 @@ def evaluar_distintos_k(pixeles):
     plt.xlabel('K')
     plt.ylabel('Exactitud (Accuracy)')
     plt.grid(True, linestyle='--', alpha=0.7)
+    plt.show()
 
 #%%
 evaluar_distintos_k([299, 300, 301]) #mejor conjunto de 3, distinto k
@@ -195,7 +197,97 @@ X_dev, X_held_out, y_dev, y_held_out = train_test_split(
     random_state=2,
     stratify=y
 )
+#%% separamos dev en train y test para esta seccion
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X_dev,
+    y_dev,
+    test_size=0.2,
+    random_state=2,
+    stratify=y_dev
+)
+
+arbol = DecisionTreeClassifier(max_depth=10)
+arbol.fit(X_train.values, y_train.values)
+
+y_pred = arbol.predict(X_test.values)
+print(accuracy_score(y_test.values, y_pred))
+matriz = confusion_matrix(y_test, y_pred)
+#plt.figure(figsize=(20,10))
+#plot_tree(arbol,
+#          max_depth=2,
+#          feature_names=X_train.columns,
+#          class_names=list(letras),
+#          rounded=True,
+#          filled=True
+#          )
+#plt.show()
+#%% 
+precision = []
+profundidad = []
+
+for d in range(1, 21, 2):
+    arbol = DecisionTreeClassifier(max_depth=d)
+    arbol.fit(X_train.values, y_train.values)
+    y_pred = arbol.predict(X_test.values)
+    precision.append(accuracy_score(y_test.values, y_pred))
+    profundidad.append(d)
+
+plt.plot(profundidad, precision)
+plt.grid()
+plt.show()
+
+
 #%%
+
+#revisar
+#prepararse un cafe durante la ejecucion
+
+arboles_precision = []
+for atributos in range(1, 202, 10):
+    
+    for altura in range(1, 11, 2):
+        arbol = DecisionTreeClassifier(max_depth=altura, max_features=atributos)
+        arbol.fit(X_train.values, y_train.values)
+        y_pred = arbol.predict(X_test.values)
+        precision = accuracy_score(y_test.values, y_pred)
+        
+        arboles_precision.append([atributos, altura, precision])
+
+arboles_precision_df = pd.DataFrame(np.array(arboles_precision),
+                                    columns=["cant_atributos",
+                                             "altura_arbol",
+                                             "precision"]
+                                    )
+#solo el maximo de cada uno
+maximos = arboles_precision_df.groupby("cant_atributos")["precision"].idxmax()
+arboles_precision_df = arboles_precision_df.loc[maximos]
+
+plt.plot(arboles_precision_df["cant_atributos"],
+         arboles_precision_df["precision"]
+    )
+plt.grid()
+plt.show()
+
+#%%
+#habia que hacerlo con k folding
+#esta linea hace arbol.fit haciendo k folding (predeterminado es 5)
+#devuelve una lista con la exactitud para cada grupo
+cross_val_score(arbol, X_dev, y=y_dev, scoring=accuracy_score)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
