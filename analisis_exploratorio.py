@@ -212,7 +212,7 @@ arbol.fit(X_train.values, y_train.values)
 
 y_pred = arbol.predict(X_test.values)
 print(accuracy_score(y_test.values, y_pred))
-matriz = confusion_matrix(y_test, y_pred)
+matriz = confusion_matrix(y_test.values, y_pred)
 #plt.figure(figsize=(20,10))
 #plot_tree(arbol,
 #          max_depth=2,
@@ -233,8 +233,15 @@ for d in range(1, 21, 2):
     precision.append(accuracy_score(y_test.values, y_pred))
     profundidad.append(d)
 
-plt.plot(profundidad, precision)
-plt.grid()
+plt.figure(figsize=(10, 5))
+plt.plot(profundidad, precision, marker='o')
+
+plt.xticks(profundidad) 
+
+plt.xlabel('Profundidad del Árbol')
+plt.ylabel('Exactitud (Accuracy)')
+plt.title('Performance del Árbol de Decisión según su Profundidad')
+plt.grid(True, linestyle='--', alpha=0.7)
 plt.show()
 
 
@@ -246,13 +253,13 @@ plt.show()
 arboles_precision = []
 for atributos in range(1, 202, 10):
     
-    for altura in range(1, 11, 2):
-        arbol = DecisionTreeClassifier(max_depth=altura, max_features=atributos)
+    for profundidad in range(1, 11, 2):
+        arbol = DecisionTreeClassifier(max_depth=profundidad, max_features=atributos)
         arbol.fit(X_train.values, y_train.values)
         y_pred = arbol.predict(X_test.values)
         precision = accuracy_score(y_test.values, y_pred)
         
-        arboles_precision.append([atributos, altura, precision])
+        arboles_precision.append([atributos, profundidad, precision])
 
 arboles_precision_df = pd.DataFrame(np.array(arboles_precision),
                                     columns=["cant_atributos",
