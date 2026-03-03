@@ -115,7 +115,37 @@ la tercera variante es muy diferente a las otras.
     \label{fig:letra_E}
 \end{figure}
 
+A diferencia de los dataset usados en clase, este dataset compuesto por imágenes consta de muchos atributos que dificultan
+la exploración de los datos por lo que necesitó un análisis más exhaustivo para encontrar los atributos relevantes.
+
 \section*{Experimentos realizados}
+\subsection*{Clasificación Binaria}
+Este experimento es para predecir las letras O y L. Para esto se separó un subconjunto del dataset original las
+imágenes correspondientes a la letra O y L, verificamos que se encuentran balanceadas con respecto a las dos clases (ya que cada letra
+consta de 1016 variantes/imágenes). Posteriormente separamos el subconjunto en dos: train y test.
+
+Generamos mapas de calor de ambas clases para elegir los atributos convenientemente, en la figura \ref{fig:mapas_calor} notamos que
+hay una gran diferencia entre las filas 10 y 15 y las columnas 20 y 23, para la letra O hay atributos con pixel negro mientras que
+para la letra L son blancos.
+
+\begin{figure}[H]
+     \centering
+     \begin{subfigure}[b]{0.45\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{mapaDeCalorO.png}
+         \caption{Mapa de calor de la letra O}
+     \end{subfigure}
+     \quad
+     \begin{subfigure}[b]{0.45\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{mapaDeCalorL.png}
+         \caption{Mapa de calor de la letra L}
+     \end{subfigure}
+     \caption{Mapas de calor de las letras O y L}
+     \label{fig:mapas_calor}
+\end{figure}
+
+
 
 \section*{Conclusión}
 \end{document}
