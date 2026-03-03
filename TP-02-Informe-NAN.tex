@@ -30,7 +30,6 @@
 \begin{document}
 
 \titulo{Informe Trabajo Práctico 02}
-\subtitulo{Subtítulo del tp}
 
 \materia{Laboratorio de Datos}
 \grupo{Grupo NAN}
@@ -41,11 +40,20 @@
 
 \maketitle
 \section*{Introducción}
+El presente trabajo tiene como objetivo evaluar la eficacia de modelos como KNN y árboles de decisión para identificar los caracteres del
+dataset EnglishTypeAlphabet.
+Una primera dificultad aparece al enfrentarse a la necesidad de procesar imágenes.
+La detección de caracteres presenta como desafíos a resolver la gran cantidad de variantes para cada letra, las similitudes entre algunas de ellas.
+Se realizó un análisis exploratorio a los fines de familiarizarse con la tarea e identificar los mejores modelos con sus correspondientes
+hiperparámetros.
 
 \section*{Análisis Exploratorio}
-Realizado el análisis consideramos que los atributos relevantes son los que están más al 'centro' del
-cuadro en donde empiezan a aparecer los pixeles de color negro. Observando la figura \ref{fig:ejemplo_letras}
-pensamos que podemos descartar los atributos de las primeras filas y columnas así como las últimas.
+El dataset está conformado por 26416 filas y 785 atributos. El atributo 'label' que nos indica la letra seguido de 784 atributos, uno para
+cada pixel (cada fila es una matriz de 28x28). Cada pixel representado por un atributo toma un valor de 0 a 255 (escala de grises).
+Para cada letra hay 1016 variantes, por lo que se trata de un dataset perfectamente balanceado.
+Realizado el análisis se considera que los atributos relevantes son los que están más al 'centro' del
+cuadro en donde empiezan a aparecer los pixeles de color negro. Se observa en la figura \ref{fig:ejemplo_letras}
+que se pueden descartar los atributos de las primeras filas y columnas así como las últimas.
 
 \begin{figure}[H]
      \centering
@@ -70,9 +78,9 @@ pensamos que podemos descartar los atributos de las primeras filas y columnas as
      \label{fig:ejemplo_letras}
 \end{figure}
 
- Como podemos observar en la figura \ref{fig:letras_diferencias}, hay letras que son más fáciles de diferenciar que otras
+Se puede observar en la figura \ref{fig:letras_diferencias} que hay letras más fáciles de diferenciar que otras
  como la S y M ya que la letra S consta de líneas curvas mientras que la M de líneas rectas. En cambio
- con las letras O y Q no es tan simple diferenciarlas ya que son bastante similares, lo que las
+ con las letras O y Q no es tan simple ya que son bastante similares, lo que las
  distingue principalmente es la tilde de la Q.
 
 \begin{figure}[H]
@@ -104,9 +112,9 @@ pensamos que podemos descartar los atributos de las primeras filas y columnas as
      \label{fig:letras_diferencias}
 \end{figure}
 
-Además nos encontramos con otro problema, para algunas letras las variantes son extremadamente
+Para algunas letras las variantes son extremadamente
 distintas entre sí. En la figura \ref{fig:letra_E} hay un claro ejemplo con la letra E donde
-la tercera variante es muy diferente a las otras.
+la tercera variante es muy diferente de las otras.
 
 \begin{figure}[H] 
     \centering
@@ -115,18 +123,20 @@ la tercera variante es muy diferente a las otras.
     \label{fig:letra_E}
 \end{figure}
 
-A diferencia de los dataset usados en clase, este dataset compuesto por imágenes consta de muchos atributos que dificultan
-la exploración de los datos por lo que necesitó un análisis más exhaustivo para encontrar los atributos relevantes.
+A diferencia de otros dataset, como el de Titanic, fue necesario graficar los datos para extraer información relevante.
+Este dataset compuesto por imágenes consta de muchos atributos que dificultan la exploración de los datos, por lo que fue necesario
+un análisis más exhaustivo.
 
 \section*{Experimentos realizados}
 \subsection*{Clasificación Binaria}
-Este experimento es para predecir las letras O y L. Para esto se separó un subconjunto del dataset original las
-imágenes correspondientes a la letra O y L, verificamos que se encuentran balanceadas con respecto a las dos clases (ya que cada letra
-consta de 1016 variantes/imágenes). Posteriormente separamos el subconjunto en dos: train y test.
+Este experimento busca clasificar una imágen en las categorías O y L. Para esto se separó un subconjunto del dataset original que contiene las
+imágenes correspondientes a la letra O y L. Se verifica que ambas clases se encuentran balanceadas (ya que cada letra
+consta de 1016 variantes/imágenes). Posteriormente se separa el subconjunto en train y test.
 
-Generamos mapas de calor de ambas clases para elegir los atributos convenientemente, en la figura \ref{fig:mapas_calor} notamos que
-hay una gran diferencia entre las filas 10 y 15 y las columnas 20 y 23, para la letra O hay atributos con pixel negro mientras que
-para la letra L son blancos.
+Se generaron mapas de calor de ambas clases para elegir los atributos convenientemente. Para cada clase se calculo el valor promedio de cada pixel.
+En la figura \ref{fig:mapas_calor} se observa que
+hay una gran diferencia entre las filas 10 y 15 y las columnas 20 y 23. Para la letra O hay atributos con pixel negro mientras que
+para la letra L son blancos. 
 
 \begin{figure}[H]
      \centering
@@ -145,9 +155,9 @@ para la letra L son blancos.
      \label{fig:mapas_calor}
 \end{figure}
 
-Primero probamos un modelo KNN primero con 5 vecinos y 3 atributos dentro del rango mencionado anteriormente, descubrimos que para
-los distintos conjuntos de atributos elegidos, el de los atributos [299, 300, 301] es el que mejor exactitud tiene así que nos quedamos
-con este para probar modelos KNN con distintos vecinos (cada 3 entre 1 y 50). En la figura \ref{fig:exactitud_3atributos} podemos observar que
+Primeramente se prueba un modelo KNN con 5 vecinos y 3 atributos dentro del rango mencionado anteriormente. Para
+los distintos conjuntos de atributos elegidos, el de los atributos [299, 300, 301] es el que mejor exactitud tiene. Se utilizó este conjunto 
+para probar modelos KNN con distintos K (entre 1 y 50). En la figura \ref{fig:exactitud_3atributos}  se observa que
 para este conjunto la cantidad de vecinos (k) que mejor exactitud tienen son 13, 34 y 37 con 0.956 de exactitud.
 \begin{figure}[H] 
     \centering
@@ -155,14 +165,44 @@ para este conjunto la cantidad de vecinos (k) que mejor exactitud tienen son 13,
     \caption{Exactitud del modelo KNN para distintos valores de K sobre los atributos [299, 300, 301]}
     \label{fig:exactitud_3atributos}
 \end{figure}
-También probamos modelos KNN con 7, 11 y 15 atributos y 5 vecinos, observamos que con 15 atributos (del rango 293-307) la exactitud es del 0.99.
-Decidimos usar estos atributos para evaluar con distinta cantidad de vecinos. 
+Se probaron modelos KNN con 7, 11 y 15 atributos y K = 5. Se observó que con 15 atributos (del rango 293-307) la exactitud es del 0.99.
+\\
+Se decidió usar estos atributos para evaluar con distintos K. Se observa en la figura \ref{fig:exactitud_15atributos} que con K = 1 se alcanza la
+mayor exactitud.
 \begin{figure}[H] 
     \centering
     \includegraphics[width=0.8\textwidth]{exactitud_15atributos.png}
-    \caption{Exactitud del modelo KNN para distintos valores de K sobre los atributos [293, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307]}
+    \caption{Exactitud del modelo KNN para distintos valores de K sobre los atributos [293-307]}
     \label{fig:exactitud_15atributos}
 \end{figure}
+\subsection*{Clasificación Multiclase}
+Este experimento busca clasificar imágenes en clases del dataset que representan las letras del alfabeto inglés.
+Primeramente se separó el conjunto de datos en desarollo (dev) y validación (held-out). 
+Se observa en la figura \ref{fig:performance} que incrementando la profundidad hasta 11 se consigue una exactitud mayor y a partir de ese punto la
+curva comienza a aplanarse, lo que indica una ganancia en exactitud menor.
+\begin{figure}[H] 
+    \centering
+    \includegraphics[width=0.8\textwidth]{performance_profundidad.png}
+    \caption{Performance del Árbol de Decisión según profundidad}
+    \label{fig:performance}
+\end{figure}
+Se realizó un experimento variando los siguientes hiperparámetros del árbol de decisión:
+Cantidad máxima de atributos de 1 a 121 con incrementos de 10
+Profundidad máxima del árbol de 1 a 9 con incrementos de 2
+Criterio de impureza Gini o Entropía
+
+Atributos : 121
+Profundidad : 9
+Criterio de impureza : entropy
+Exactitud media : 0.7733
+
+\begin{figure}[H] 
+    \centering
+    \includegraphics[width=0.8\textwidth]{entropy.png}
+    \caption{Performance del Árbol de Decisión según profundidad}
+    \label{fig:performance}
+\end{figure}
+
 \section*{Conclusión}
 \end{document}
 
