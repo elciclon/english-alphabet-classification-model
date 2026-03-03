@@ -44,8 +44,8 @@
 
 \section*{Análisis Exploratorio}
 Realizado el análisis consideramos que los atributos relevantes son los que están más al 'centro' del
-cuadro en donde empiezan a aparecer los pixeles de color negro. Observando la figura 1 pensamos que 
-podemos descartar los atributos de las primeras filas y columnas así como las últimas.
+cuadro en donde empiezan a aparecer los pixeles de color negro. Observando la figura \ref{fig:ejemplo_letras}
+pensamos que podemos descartar los atributos de las primeras filas y columnas así como las últimas.
 
 \begin{figure}[H]
      \centering
@@ -67,10 +67,10 @@ podemos descartar los atributos de las primeras filas y columnas así como las �
          \caption{Algunas variantes de la letra Z}
      \end{subfigure}
      \caption{Letras A, K y Z con sus respectivas variantes}
-     \label{fig:tres_graficos}
+     \label{fig:ejemplo_letras}
 \end{figure}
 
- Como podemos observar en la figura 2, hay letras que son más fáciles de diferenciar que otras
+ Como podemos observar en la figura \ref{fig:letras_diferencias}, hay letras que son más fáciles de diferenciar que otras
  como la S y M ya que la letra S consta de líneas curvas mientras que la M de líneas rectas. En cambio
  con las letras O y Q no es tan simple diferenciarlas ya que son bastante similares, lo que las
  distingue principalmente es la tilde de la Q.
@@ -101,7 +101,18 @@ podemos descartar los atributos de las primeras filas y columnas así como las �
          \caption{Algunas variantes de la letra Q}
      \end{subfigure}
      \caption{Letras S, M, O y Q con sus respectivas variantes}
-     \label{fig:tres_graficos}
+     \label{fig:letras_diferencias}
+\end{figure}
+
+Además nos encontramos con otro problema, para algunas letras las variantes son extremadamente
+distintas entre sí. En la figura \ref{fig:letra_E} hay un claro ejemplo con la letra E donde
+la tercera variante es muy diferente a las otras.
+
+\begin{figure}[H] 
+    \centering
+    \includegraphics[width=0.8\textwidth]{letrasE.png}
+    \caption{Algunas variantes de la letra E}
+    \label{fig:letra_E}
 \end{figure}
 
 \section*{Experimentos realizados}
