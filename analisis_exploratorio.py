@@ -14,10 +14,13 @@ Este archivo incluye todo el código para realizar el análisis exploratorio
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.model_selection import train_test_split, cross_val_score
+# Usamos StratifiedKFold para mantener las proporciones entre letras
+from sklearn.model_selection import train_test_split, cross_val_score, StratifiedKFold
+import string
+
 
 #%% Cargamos el csv
 
@@ -245,43 +248,76 @@ plt.grid(True, linestyle='--', alpha=0.7)
 plt.show()
 
 
-#%%
+#%% Implementación con K-folding
 
-#revisar
-#prepararse un cafe durante la ejecucion
+# usamos Stratified para mantener el balance de las 26 letras
+skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=2)
+resultados = []
 
-arboles_precision = []
-for atributos in range(1, 202, 10):
-    
+
+for atributos in range(1, 80, 10):
     for profundidad in range(1, 11, 2):
-        arbol = DecisionTreeClassifier(max_depth=profundidad, max_features=atributos)
-        arbol.fit(X_train.values, y_train.values)
-        y_pred = arbol.predict(X_test.values)
-        precision = accuracy_score(y_test.values, y_pred)
+        arbol = DecisionTreeClassifier(max_depth=profundidad, max_features=atributos, random_state=2)
+        scores = cross_val_score(arbol, X_dev.values, y_dev.values, cv=skf, scoring='accuracy')
+        # Guardamos el promedio de las 5 iteraciones
+        resultados.append([atributos, profundidad, scores.mean()])
         
-        arboles_precision.append([atributos, profundidad, precision])
 
-arboles_precision_df = pd.DataFrame(np.array(arboles_precision),
-                                    columns=["cant_atributos",
-                                             "altura_arbol",
-                                             "precision"]
+arboles_precision_df = pd.DataFrame(np.array(resultados),
+                                    columns=["atributos",
+                                             "profundidad",
+                                             "exactitud_promedio"]
                                     )
 #solo el maximo de cada uno
-maximos = arboles_precision_df.groupby("cant_atributos")["precision"].idxmax()
-arboles_precision_df = arboles_precision_df.loc[maximos]
+mejor_config = arboles_precision_df.loc[arboles_precision_df['exactitud_promedio'].idxmax()]
+print("\n--- MEJOR MODELO ENCONTRADO ---")
+print(f"Atributos : {mejor_config['atributos']}")
+print(f"Profundidad : {mejor_config['profundidad']}")
+print(f"Exactitud media : {mejor_config['exactitud_promedio']:.4f}") 
 
-plt.plot(arboles_precision_df["cant_atributos"],
-         arboles_precision_df["precision"]
-    )
-plt.grid()
+# Gráfico para el informe
+plt.figure(figsize=(10, 6))
+for prof in [2, 5, 8, 10]: # Graficamos algunas profundidades para comparar
+    data_plot = arboles_precision_df[arboles_precision_df['profundidad'] == prof]
+    plt.plot(data_plot['atributos'], data_plot['exactitud_promedio'], label=f'Profundidad {prof}', marker='o')
+
+plt.title('Comparación de Modelos: Exactitud vs Cantidad de Atributos')
+plt.xlabel('Cantidad de Atributos')
+plt.ylabel('Exactitud Promedio (5-Fold)')
+plt.legend()
+plt.grid(True)
 plt.show()
 
-#%%
-#habia que hacerlo con k folding
-#esta linea hace arbol.fit haciendo k folding (predeterminado es 5)
-#devuelve una lista con la exactitud para cada grupo
-cross_val_score(arbol, X_dev, y=y_dev, scoring=accuracy_score)
+#%% Definir el mejor modelo según los resultados
+mejor_profundidad = 9
+mejores_atributos = 71
 
+arbol_final = DecisionTreeClassifier(
+    max_depth=mejor_profundidad, 
+    max_features=mejores_atributos, 
+    random_state=2
+)
+
+# Entrenar en TODO el conjunto de desarrollo (X_dev, y_dev)
+arbol_final.fit(X_dev.values, y_dev.values)
+
+# Predecir las etiquetas del conjunto held-out
+y_pred_heldout = arbol_final.predict(X_held_out.values)
+
+# Reportar la performance final
+exactitud_final = accuracy_score(y_held_out.values, y_pred_heldout)
+print(f"Exactitud Final en Held-out: {exactitud_final:.4f}")
+
+# Matriz de Confusión
+cm = confusion_matrix(y_held_out.values, y_pred_heldout)
+letras = list(string.ascii_uppercase)
+
+plt.figure(figsize=(12, 10))
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=letras) # no entra en un 'print'
+disp.plot(cmap='Blues', values_format='d')
+plt.title(f'Matriz de Confusión\n(Exactitud: {exactitud_final:.4f})')
+plt.xticks(rotation=45)
+plt.show()
 
 
 
