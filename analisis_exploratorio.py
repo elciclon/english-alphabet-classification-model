@@ -336,9 +336,9 @@ print(f"Exactitud Final en Held-out: {exactitud_final:.4f}")
 cm = confusion_matrix(y_held_out.values, y_pred_heldout)
 letras = list(string.ascii_uppercase)
 
-plt.figure(figsize=(20, 18))
+fig, ax = plt.subplots(figsize=(20, 18))
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=letras) # no entra en un 'print'
-disp.plot(cmap='Blues', values_format='d')
+disp.plot(ax=ax, cmap='Blues', values_format='d')
 plt.title(f'Matriz de Confusión\n(Exactitud: {exactitud_final:.4f})')
 plt.xticks(rotation=45)
 plt.show()
