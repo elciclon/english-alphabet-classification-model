@@ -161,7 +161,7 @@ def evaluar_distintos_k(pixeles):
     lista_k = []
     lista_exactitud = []
     
-    for k in range(1, 51, 3):
+    for k in range(1, 51):
         exactitud, matriz = evaluar_y_mostrar_knn(pixeles, k) 
         lista_k.append(k)
         lista_exactitud.append(exactitud)
@@ -171,6 +171,7 @@ def evaluar_distintos_k(pixeles):
     plt.title('Exactitud del modelo KNN para distintos valores de K')
     plt.xlabel('K')
     plt.ylabel('Exactitud (Accuracy)')
+    plt.xticks(range(0,51, 5))
     plt.grid(True, linestyle='--', alpha=0.7)
     plt.show()
 

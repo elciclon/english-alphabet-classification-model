@@ -177,7 +177,7 @@ mayor exactitud.
 \end{figure}
 \subsection*{Clasificación Multiclase}
 Este experimento busca clasificar imágenes en clases del dataset que representan las letras del alfabeto inglés.
-Primeramente se separó el conjunto de datos en desarollo (dev) y validación (held-out). 
+Primeramente se separó el conjunto de datos en desarollo (dev) y validación (held-out). Se separó para el held-out el 20\% de los datos disponibles.
 Se observa en la figura \ref{fig:performance} que incrementando la profundidad hasta 11 se consigue una exactitud mayor y a partir de ese punto la
 curva comienza a aplanarse, lo que indica una ganancia en exactitud menor.
 \begin{figure}[H] 
@@ -187,22 +187,64 @@ curva comienza a aplanarse, lo que indica una ganancia en exactitud menor.
     \label{fig:performance}
 \end{figure}
 Se realizó un experimento variando los siguientes hiperparámetros del árbol de decisión:
-Cantidad máxima de atributos de 1 a 121 con incrementos de 10
-Profundidad máxima del árbol de 1 a 9 con incrementos de 2
-Criterio de impureza Gini o Entropía
+Cantidad máxima de atributos de 1 a 121 con incrementos de 10.
+Profundidad máxima del árbol de 1 a 9 con incrementos de 2.
+Criterio de impureza Gini o Entropía.
+Se utilizó la técnica de validación cruzada con K-folding, usando 5 folds.
+\\
 
-Atributos : 121
-Profundidad : 9
-Criterio de impureza : entropy
-Exactitud media : 0.7733
+\begin{figure}[H] 
+    \centering
+    \includegraphics[width=0.8\textwidth]{gini.png}
+    \caption{Exactitud según hiperparámetros}
+    \label{fig:gini}
+\end{figure}
 
 \begin{figure}[H] 
     \centering
     \includegraphics[width=0.8\textwidth]{entropy.png}
-    \caption{Performance del Árbol de Decisión según profundidad}
-    \label{fig:performance}
+    \caption{Exactitud según hiperparámetros}
+    \label{fig:entropy}
+\end{figure}
+De estos experimentos se desprende que el mejor modelo es el siguiente:
+\\
+Atributos : 121
+Profundidad : 9
+Criterio de impureza : entropy
+Exactitud media : 0.7733
+\\
+Se procede a entrenar el modelo en todo el conjunto desarrollo según los hiperparámetros seleccionados. Se realizan predicciones en el conjunto held-out y se observa la siguiente
+performance: exactitud = 0.7627
+
+\begin{figure}[H] 
+    \centering
+    \includegraphics[width=0.8\textwidth]{matriz.png}
+    \caption{Matriz de confusión del modelo elegido}
+    \label{fig:matriz}
 \end{figure}
 
+En la matriz de confusión se registran errores, siendo los mayores la clasificación de Y como T(25), la O como D(21) y la W como N(18)
 \section*{Conclusión}
+Para el modelo KNN entrenado para clasificación binaria se obtuvo que con 15 atributos
+(293-307) y K = 1, la exactitud es del 0.99. Para los caracteres
+especificados este modelo muestra un muy buen desempeño. Esta exactitud es alcanzable por tratarse de dos caracteres muy distintos entre si, y posiblemente
+ no pueda ser replicado con cualquier par de caracteres.
+
+\indent Para el problema de Clasificación Multiclase, un árbol de decisión entrenado con los siguientes hiperparámetros:
+\\
+Atributos : 121
+Profundidad : 9
+Criterio de impureza : entropy
+Exactitud : 0.7627
+\\
+Al evaluar en el conjunto held-out la exactitud obtenida(0.7627) se aproximó a la exactitud media obtenida al seleccionar el mejor modelo de los 
+experimentos(0.7733).
+Se verifica la utilidad de la matriz de confusión para registrar los errores del modelo al clasificar caracteres
+parecidos entre si.
+
+
+
+
 \end{document}
 
+0.7733
