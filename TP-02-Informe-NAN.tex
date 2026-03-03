@@ -44,8 +44,8 @@
 
 \section*{Análisis Exploratorio}
 Realizado el análisis consideramos que los atributos relevantes son los que están más al 'centro' del
-cuadro en dónde empiezan a aparecer los pixeles de color negro. Observando la figura 1 pensamos que 
-podemos descartar los atributos de las primeras 2 o 3 filas/columnas.
+cuadro en donde empiezan a aparecer los pixeles de color negro. Observando la figura 1 pensamos que 
+podemos descartar los atributos de las primeras filas y columnas así como las últimas.
 
 \begin{figure}[H]
      \centering
@@ -67,6 +67,40 @@ podemos descartar los atributos de las primeras 2 o 3 filas/columnas.
          \caption{Algunas variantes de la letra Z}
      \end{subfigure}
      \caption{Letras A, K y Z con sus respectivas variantes}
+     \label{fig:tres_graficos}
+\end{figure}
+
+ Como podemos observar en la figura 2, hay letras que son más fáciles de diferenciar que otras
+ como la S y M ya que la letra S consta de líneas curvas mientras que la M de líneas rectas. En cambio
+ con las letras O y Q no es tan simple diferenciarlas ya que son bastante similares, lo que las
+ distingue principalmente es la tilde de la Q.
+
+\begin{figure}[H]
+     \centering
+     \begin{subfigure}[b]{0.45\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{letrasS.png}
+         \caption{Algunas variantes de la letra S}
+     \end{subfigure}
+     \quad
+     \begin{subfigure}[b]{0.45\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{letrasO.png}
+         \caption{Algunas variantes de la letra O}
+     \end{subfigure}
+     \vspace{1em}
+     \begin{subfigure}[b]{0.45\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{letrasM.png}
+         \caption{Algunas variantes de la letra M}
+     \end{subfigure}
+     \quad
+     \begin{subfigure}[b]{0.45\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{letrasQ.png}
+         \caption{Algunas variantes de la letra Q}
+     \end{subfigure}
+     \caption{Letras S, M, O y Q con sus respectivas variantes}
      \label{fig:tres_graficos}
 \end{figure}
 
