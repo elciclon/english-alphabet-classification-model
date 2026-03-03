@@ -1,4 +1,4 @@
-\documentclass[11pt,a4paper]{article}
+\documentclass[12pt,a4paper]{article}
 \usepackage[utf8]{inputenc} % para poder usar tildes en archivos UTF-8
 \usepackage[spanish]{babel} % para que comandos como \today den el resultado en castellano
 \usepackage{a4wide} % márgenes un poco más anchos que lo usual
@@ -14,6 +14,7 @@
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{caption}
+\usepackage{subcaption}
 
 \graphicspath{{images}}
 
@@ -40,6 +41,34 @@
 
 \maketitle
 \section*{Introducción}
+
+\section*{Análisis Exploratorio}
+Realizado el análisis consideramos que los atributos relevantes son los que están más al 'centro' del
+cuadro en dónde empiezan a aparecer los pixeles de color negro. Observando la figura 1 pensamos que 
+podemos descartar los atributos de las primeras 2 o 3 filas/columnas.
+
+\begin{figure}[H]
+     \centering
+     \begin{subfigure}[b]{0.8\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{letrasA.png}
+         \caption{Algunas variantes de la letra A}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.8\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{letrasK.png}
+         \caption{Algunas variantes de la letra K}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.8\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{letrasZ.png}
+         \caption{Algunas variantes de la letra Z}
+     \end{subfigure}
+     \caption{Letras A, K y Z con sus respectivas variantes}
+     \label{fig:tres_graficos}
+\end{figure}
 
 \section*{Experimentos realizados}
 
