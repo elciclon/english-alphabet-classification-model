@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import DecisionTreeClassifier, plot_tree
 # Usamos StratifiedKFold para mantener las proporciones entre letras
 from sklearn.model_selection import train_test_split, cross_val_score, StratifiedKFold
 import string
@@ -130,30 +130,30 @@ def evaluar_y_mostrar_knn(lista_de_atributos, k):
     return (exactitud, matriz)
 
 #%% Probamos casos
-_ = evaluar_y_mostrar_knn([0, 1, 2], 5) #caso de control
+evaluar_y_mostrar_knn([0, 1, 2], 5) #caso de control
 
 
 # ELegimos 10(filas) * 28(columnas) + 21(columna específica, elegida por mapa) 
-_ = evaluar_y_mostrar_knn([301, 302, 303], 5) #Elegido por mapa
+evaluar_y_mostrar_knn([301, 302, 303], 5) #Elegido por mapa
 
-_ = evaluar_y_mostrar_knn([299, 300, 301], 5) #Desplazado a la izq.
+evaluar_y_mostrar_knn([299, 300, 301], 5) #Desplazado a la izq.
 
-_ = evaluar_y_mostrar_knn([299-28, 300-28, 301-28], 5) #line up
+evaluar_y_mostrar_knn([299-28, 300-28, 301-28], 5) #line up
 
-_ = evaluar_y_mostrar_knn([299+28, 300+28, 301+28], 5) #line down
+evaluar_y_mostrar_knn([299+28, 300+28, 301+28], 5) #line down
 
-_ = evaluar_y_mostrar_knn([299+56, 300+56, 301+56], 5) # 2 line down
+evaluar_y_mostrar_knn([299+56, 300+56, 301+56], 5) # 2 line down
 
 #%%
 """Como detectamos que los atributos 299, 300, 301 eran la mejor elección 
 según las métricas, probamos ampliando la cantidad de atributos a 7"""
-_ = evaluar_y_mostrar_knn([i for i in range(297,304)], 5)
+evaluar_y_mostrar_knn([i for i in range(297,304)], 5)
 
 # Mejoraron las métricas, ampliamos atributos a 11
-_ = evaluar_y_mostrar_knn([i for i in range(295,306)], 5)
+evaluar_y_mostrar_knn([i for i in range(295,306)], 5)
 
 # Mejoraron las métricas, ampliamos atributos a 15
-_ = evaluar_y_mostrar_knn([i for i in range(293,308)], 5) # Detecta el 100% de las 'L'
+evaluar_y_mostrar_knn([i for i in range(293,308)], 5) # Detecta el 100% de las 'L'
 
 
 #%% Probamos distintos K's
@@ -216,15 +216,17 @@ arbol.fit(X_train.values, y_train.values)
 y_pred = arbol.predict(X_test.values)
 print(accuracy_score(y_test.values, y_pred))
 matriz = confusion_matrix(y_test.values, y_pred)
-#plt.figure(figsize=(20,10))
-#plot_tree(arbol,
-#          max_depth=2,
-#          feature_names=X_train.columns,
-#          class_names=list(letras),
-#          rounded=True,
-#          filled=True
-#          )
-#plt.show()
+#%% grafico de las primeras ramas del arbol
+
+plt.figure(figsize=(80,40))
+plot_tree(arbol,
+          max_depth=2,
+          feature_names=X_train.columns,
+          class_names=list(letras),
+          rounded=True,
+          filled=True
+          )
+plt.show()
 #%% 
 precision = []
 profundidad = []
@@ -253,49 +255,71 @@ plt.show()
 # usamos Stratified para mantener el balance de las 26 letras
 skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=2)
 resultados = []
-
-
-for atributos in range(1, 80, 10):
-    for profundidad in range(1, 11, 2):
-        arbol = DecisionTreeClassifier(max_depth=profundidad, max_features=atributos, random_state=2)
-        scores = cross_val_score(arbol, X_dev.values, y_dev.values, cv=skf, scoring='accuracy')
-        # Guardamos el promedio de las 5 iteraciones
-        resultados.append([atributos, profundidad, scores.mean()])
-        
-
-arboles_precision_df = pd.DataFrame(np.array(resultados),
+criterios = ["gini", "entropy"]
+for c in criterios:
+    for atributos in range(1, 122, 10):
+        for profundidad in range(1, 11, 2):
+    
+                arbol = DecisionTreeClassifier(max_depth=profundidad, 
+                                               max_features=atributos, 
+                                               random_state=2,
+                                               criterion=c
+                                               )
+                scores = cross_val_score(arbol, X_dev.values, y_dev.values, cv=skf, scoring='accuracy')
+                # Guardamos el promedio de las 5 iteraciones
+                resultados.append([atributos, profundidad, c, scores.mean()])
+            
+    
+arboles_precision_df = pd.DataFrame(resultados,
                                     columns=["atributos",
                                              "profundidad",
+                                             "criterio",
                                              "exactitud_promedio"]
                                     )
+#%%
 #solo el maximo de cada uno
-mejor_config = arboles_precision_df.loc[arboles_precision_df['exactitud_promedio'].idxmax()]
-print("\n--- MEJOR MODELO ENCONTRADO ---")
-print(f"Atributos : {mejor_config['atributos']}")
-print(f"Profundidad : {mejor_config['profundidad']}")
-print(f"Exactitud media : {mejor_config['exactitud_promedio']:.4f}") 
-
+for c in criterios:
+    mejor_config =( arboles_precision_df.loc[arboles_precision_df[arboles_precision_df["criterio"]==c]['exactitud_promedio'].idxmax()]
+                    )
+    print("\n--- MEJOR MODELO ENCONTRADO ---")
+    print(f"Atributos : {mejor_config['atributos']}")
+    print(f"Profundidad : {mejor_config['profundidad']}")
+    print(f"Criterio de impureza : {c}")
+    print(f"Exactitud media : {float(mejor_config['exactitud_promedio']):.4f}") 
+#%%
 # Gráfico para el informe
-plt.figure(figsize=(10, 6))
-for prof in [2, 5, 8, 10]: # Graficamos algunas profundidades para comparar
-    data_plot = arboles_precision_df[arboles_precision_df['profundidad'] == prof]
-    plt.plot(data_plot['atributos'], data_plot['exactitud_promedio'], label=f'Profundidad {prof}', marker='o')
-
-plt.title('Comparación de Modelos: Exactitud vs Cantidad de Atributos')
-plt.xlabel('Cantidad de Atributos')
-plt.ylabel('Exactitud Promedio (5-Fold)')
-plt.legend()
-plt.grid(True)
-plt.show()
+colores = ["b", "g", "r", "k"]
+for c in criterios:
+    plt.figure(figsize=(10, 6))
+    for i, prof in enumerate([3, 5, 7, 9]): # Graficamos algunas profundidades para comparar
+        data_plot = arboles_precision_df[
+            (arboles_precision_df['profundidad'] == prof) &
+            (arboles_precision_df['criterio'] == c)
+            ]
+        plt.plot(data_plot['atributos'], 
+                 data_plot['exactitud_promedio'], 
+                 label=f'Profundidad {prof}', 
+                 marker='o',
+                 color=colores[i]
+                 )
+    
+    plt.title(f'Comparación de Modelos: Exactitud vs Cantidad de Atributos ({c})')
+    plt.xlabel('Cantidad de Atributos')
+    plt.ylabel('Exactitud Promedio (5-Fold)')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
 
 #%% Definir el mejor modelo según los resultados
 mejor_profundidad = 9
-mejores_atributos = 71
+mejores_atributos = 121
+criterio_impureza = "entropy"
 
 arbol_final = DecisionTreeClassifier(
     max_depth=mejor_profundidad, 
     max_features=mejores_atributos, 
-    random_state=2
+    random_state=2,
+    criterion=criterio_impureza
 )
 
 # Entrenar en TODO el conjunto de desarrollo (X_dev, y_dev)
@@ -312,7 +336,7 @@ print(f"Exactitud Final en Held-out: {exactitud_final:.4f}")
 cm = confusion_matrix(y_held_out.values, y_pred_heldout)
 letras = list(string.ascii_uppercase)
 
-plt.figure(figsize=(12, 10))
+plt.figure(figsize=(20, 18))
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=letras) # no entra en un 'print'
 disp.plot(cmap='Blues', values_format='d')
 plt.title(f'Matriz de Confusión\n(Exactitud: {exactitud_final:.4f})')
