@@ -145,7 +145,17 @@ para la letra L son blancos.
      \label{fig:mapas_calor}
 \end{figure}
 
+Primero probamos un modelo KNN primero con 5 vecinos y 3 atributos dentro del rango mencionado anteriormente, descubrimos que para
+los distintos conjuntos de atributos elegidos, el de los atributos [299, 300, 301] es el que mejor exactitud tiene así que nos quedamos
+con este para probar modelos KNN con distintos vecinos (entre 1 y 50). En la figura \ref{fig:exactitud_3atributos} podemos observar que
+para este conjunto la cantidad de vecinos (k) que mejor exactitud tienen son
 
+\begin{figure}[H] 
+    \centering
+    \includegraphics[width=0.8\textwidth]{3atributos_distintosK.png}
+    \caption{Exactitud del modelo KNN para distintos valores de K sobre los atributos [299, 300, 301]}
+    \label{fig:exactitud_3atributos}
+\end{figure}
 
 \section*{Conclusión}
 \end{document}
