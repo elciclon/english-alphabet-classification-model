@@ -26,6 +26,42 @@ import string
 
 letras_df = pd.read_csv('TP02-EnglishTypeAlphabet.csv')
 
+#%% Para evaluar distintas cantidades de atributos y K's
+def evaluar_y_mostrar_knn(lista_de_atributos, k):
+    columnas = ['pixel ' + str(atributo) for atributo in lista_de_atributos]
+    clasificador = KNeighborsClassifier(n_neighbors=k)
+    clasificador.fit(X_train[columnas].values, y_train.values)
+    y_pred = clasificador.predict(X_test[columnas].values)
+    exactitud = accuracy_score(y_test.values, y_pred)
+    matriz = confusion_matrix(y_test.values, y_pred)
+    print('*'*25,
+        f"knn con pixeles {lista_de_atributos} y k={k}",
+        f"Exactitud: {round(exactitud, 3)}",
+        "matriz de confusion:",
+        matriz,
+        '_'*25,
+        sep='\n')
+    return (exactitud, matriz)
+
+#%% Probamos distintos K's
+def evaluar_distintos_k(pixeles):
+    lista_k = []
+    lista_exactitud = []
+    
+    for k in range(1, 51):
+        exactitud, matriz = evaluar_y_mostrar_knn(pixeles, k) 
+        lista_k.append(k)
+        lista_exactitud.append(exactitud)
+        
+    plt.figure(figsize=(10, 6))
+    plt.plot(lista_k, lista_exactitud, marker='o')
+    plt.title('Exactitud del modelo KNN para distintos valores de K')
+    plt.xlabel('K')
+    plt.ylabel('Exactitud (Accuracy)')
+    plt.xticks(range(0,51, 5))
+    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.show()
+
 #%% Ejercicio 1, análisis exploratorio
 
 n_filas, n_columnas = letras_df.shape
@@ -112,22 +148,6 @@ plt.imshow(img, cmap='gray')
 plt.grid()
 plt.show()
 
-#%% Elegimos 3 atributos
-def evaluar_y_mostrar_knn(lista_de_atributos, k):
-    columnas = ['pixel ' + str(atributo) for atributo in lista_de_atributos]
-    clasificador = KNeighborsClassifier(n_neighbors=k)
-    clasificador.fit(X_train[columnas].values, y_train.values)
-    y_pred = clasificador.predict(X_test[columnas].values)
-    exactitud = accuracy_score(y_test.values, y_pred)
-    matriz = confusion_matrix(y_test.values, y_pred)
-    print('*'*25,
-        f"knn con pixeles {lista_de_atributos} y k={k}",
-        f"Exactitud: {round(exactitud, 3)}",
-        "matriz de confusion:",
-        matriz,
-        '_'*25,
-        sep='\n')
-    return (exactitud, matriz)
 
 #%% Probamos casos
 evaluar_y_mostrar_knn([0, 1, 2], 5) #caso de control
@@ -156,24 +176,6 @@ evaluar_y_mostrar_knn([i for i in range(295,306)], 5)
 evaluar_y_mostrar_knn([i for i in range(293,308)], 5) # Detecta el 100% de las 'L'
 
 
-#%% Probamos distintos K's
-def evaluar_distintos_k(pixeles):
-    lista_k = []
-    lista_exactitud = []
-    
-    for k in range(1, 51):
-        exactitud, matriz = evaluar_y_mostrar_knn(pixeles, k) 
-        lista_k.append(k)
-        lista_exactitud.append(exactitud)
-        
-    plt.figure(figsize=(10, 6))
-    plt.plot(lista_k, lista_exactitud, marker='o')
-    plt.title('Exactitud del modelo KNN para distintos valores de K')
-    plt.xlabel('K')
-    plt.ylabel('Exactitud (Accuracy)')
-    plt.xticks(range(0,51, 5))
-    plt.grid(True, linestyle='--', alpha=0.7)
-    plt.show()
 
 #%%
 evaluar_distintos_k([299, 300, 301]) #mejor conjunto de 3, distinto k
@@ -252,7 +254,7 @@ plt.show()
 
 
 #%% Implementación con K-folding
-
+# ESTA CELDA TARDA MUCHO EN EJECUTARSE
 # usamos Stratified para mantener el balance de las 26 letras
 skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=2)
 resultados = []
@@ -266,7 +268,12 @@ for c in criterios:
                                                random_state=2,
                                                criterion=c
                                                )
-                scores = cross_val_score(arbol, X_dev.values, y_dev.values, cv=skf, scoring='accuracy')
+                scores = cross_val_score(arbol, 
+                                         X_dev.values, 
+                                         y_dev.values, 
+                                         cv=skf, 
+                                         scoring='accuracy',
+                                         n_jobs=-1) #reparte entre núcleos
                 # Guardamos el promedio de las 5 iteraciones
                 resultados.append([atributos, profundidad, c, scores.mean()])
             
