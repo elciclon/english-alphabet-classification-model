@@ -15,6 +15,7 @@
 \usepackage{float}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage[none]{hyphenat}
 
 \graphicspath{{images}}
 
@@ -42,18 +43,26 @@
 \section*{Introducción}
 El presente trabajo tiene como objetivo evaluar la eficacia de modelos como KNN y árboles de decisión para identificar los caracteres del
 dataset EnglishTypeAlphabet.
-Una primera dificultad aparece al enfrentarse a la necesidad de procesar imágenes.
-La detección de caracteres presenta como desafíos a resolver la gran cantidad de variantes para cada letra, las similitudes entre algunas de ellas.
+\newline
+\newline
+Una primera dificultad aparece al enfrentarse con el procesamiento de imágenes.
+\newline
+La detección de caracteres presenta como desafíos a resolver la gran cantidad de variantes para cada letra y las similitudes entre algunas de ellas.
+\newline
+\newline
 Se realizó un análisis exploratorio a los fines de familiarizarse con la tarea e identificar los mejores modelos con sus correspondientes
 hiperparámetros.
-
+\newpage
 \section*{Análisis Exploratorio}
-El dataset está conformado por 26416 filas y 785 atributos. El atributo 'label' que nos indica la letra seguido de 784 atributos, uno para
-cada pixel (cada fila es una matriz de 28x28). Cada pixel representado por un atributo toma un valor de 0 a 255 (escala de grises).
-Para cada letra hay 1016 variantes, por lo que se trata de un dataset perfectamente balanceado.
-Realizado el análisis se considera que los atributos relevantes son los que están más al 'centro' del
-cuadro en donde empiezan a aparecer los pixeles de color negro. Se observa en la figura \ref{fig:ejemplo_letras}
-que se pueden descartar los atributos de las primeras filas y columnas así como las últimas.
+El dataset está conformado por 26416 filas y 785 atributos. El atributo 'label' (que nos indica la letra) y 784 atributos (cada uno por pixel)
+que representan una matriz de 28x28. Cada pixel es representado por un atributo toma un valor de 0 a 255 (escala de grises).
+\newline
+\newline
+Cabe destacar que para cada letra hay 1016 variantes, por lo que se trata de un dataset perfectamente balanceado.
+\newline
+Realizado el análisis se considera que los atributos relevantes son los que están más al 'centro' de la
+matriz en donde empiezan a aparecer los pixeles de color negro. Como se observa en la figura \ref{fig:ejemplo_letras}
+se pueden descartar los atributos de las primeras filas y columnas así como las últimas.
 
 \begin{figure}[H]
      \centering
@@ -78,10 +87,9 @@ que se pueden descartar los atributos de las primeras filas y columnas así como
      \label{fig:ejemplo_letras}
 \end{figure}
 
-Se puede observar en la figura \ref{fig:letras_diferencias} que hay letras más fáciles de diferenciar que otras
- como la S y M ya que la letra S consta de líneas curvas mientras que la M de líneas rectas. En cambio
- con las letras O y Q no es tan simple ya que son bastante similares, lo que las
- distingue principalmente es la tilde de la Q.
+En este dataset hay letras más fáciles de diferenciar que otras, por ejemplo, en la figura \ref{fig:letras_diferencias} se puede observar
+que las letras S y M son distinguibles ya que la S consta de líneas curvas mientras que la M de líneas rectas. En cambio las letras O y Q
+son bastante similares siendo la tilde de la Q lo que principalmente las diferencia.
 
 \begin{figure}[H]
      \centering
@@ -158,17 +166,22 @@ para la letra L son blancos.
 Primeramente se prueba un modelo KNN con 5 vecinos y 3 atributos dentro del rango mencionado anteriormente. Para
 los distintos conjuntos de atributos elegidos, el de los atributos [299, 300, 301] es el que mejor exactitud tiene. Se utilizó este conjunto 
 para probar modelos KNN con distintos K (entre 1 y 50). En la figura \ref{fig:exactitud_3atributos}  se observa que
-para este conjunto la cantidad de vecinos (k) que mejor exactitud tienen son 13, 34 y 37 con 0.956 de exactitud.
+para este conjunto la cantidad de vecinos (K) que mejor exactitud tienen son 13, 34 y 37 con 0.956 de exactitud.
+\newline
+\newline
+Se probaron modelos KNN con 7, 11 y 15 atributos y K = 5. Se observó que con 15 atributos (del rango 293-307) la exactitud es del 0.99.
+\newline
+Se decidió usar estos atributos para evaluar con distintos K. Se observa en la figura \ref{fig:exactitud_15atributos} que con K = 1 se alcanza la
+mayor exactitud (0.995). Es importante tener en cuenta que al usar este valor de K estamos sobreajustando el modelo a los datos de entrenamiento
+perdiendo generalización. Es posible que no obtenga la mayor exactitud usando otra semilla para dividir los datos (en train y test)
+o si se cambia la proporción de los conjuntos (30\% para test en lugar de 20\%, por ejemplo).
 \begin{figure}[H] 
     \centering
     \includegraphics[width=0.8\textwidth]{3atributos_distintosK.png}
     \caption{Exactitud del modelo KNN para distintos valores de K sobre los atributos [299, 300, 301]}
     \label{fig:exactitud_3atributos}
 \end{figure}
-Se probaron modelos KNN con 7, 11 y 15 atributos y K = 5. Se observó que con 15 atributos (del rango 293-307) la exactitud es del 0.99.
-\\
-Se decidió usar estos atributos para evaluar con distintos K. Se observa en la figura \ref{fig:exactitud_15atributos} que con K = 1 se alcanza la
-mayor exactitud.
+
 \begin{figure}[H] 
     \centering
     \includegraphics[width=0.8\textwidth]{exactitud_15atributos.png}
@@ -179,7 +192,7 @@ mayor exactitud.
 Este experimento busca clasificar imágenes en clases del dataset que representan las letras del alfabeto inglés.
 Primeramente se separó el conjunto de datos en desarollo (dev) y validación (held-out). Se separó para el held-out el 20\% de los datos disponibles.
 Se observa en la figura \ref{fig:performance} que incrementando la profundidad hasta 11 se consigue una exactitud mayor y a partir de ese punto la
-curva comienza a aplanarse, lo que indica una ganancia en exactitud menor.
+curva comienza a aplanarse, indicando una ganancia en exactitud menor.
 \begin{figure}[H] 
     \centering
     \includegraphics[width=0.8\textwidth]{performance_profundidad.png}
@@ -187,12 +200,13 @@ curva comienza a aplanarse, lo que indica una ganancia en exactitud menor.
     \label{fig:performance}
 \end{figure}
 Se realizó un experimento variando los siguientes hiperparámetros del árbol de decisión:
-Cantidad máxima de atributos de 1 a 121 con incrementos de 10.
-Profundidad máxima del árbol de 1 a 9 con incrementos de 2.
-Criterio de impureza Gini o Entropía.
-Se utilizó la técnica de validación cruzada con K-folding, usando 5 folds.
-\\
-
+\begin{itemize}
+    \item Cantidad máxima de atributos de 1 a 121 con incrementos de 10.
+    \item Profundidad máxima del árbol de 1 a 9 con incrementos de 2.
+    \item Criterio de impureza Gini o Entropía.
+\end{itemize}
+Se utilizó la técnica de validación cruzada con K-folding, usando 5 folds. En las figuras \ref{fig:gini} y \ref{fig:entropy} se pueden
+observar los resultados del experimento con las variaciones mencionadas.
 \begin{figure}[H] 
     \centering
     \includegraphics[width=0.8\textwidth]{gini.png}
@@ -206,15 +220,16 @@ Se utilizó la técnica de validación cruzada con K-folding, usando 5 folds.
     \caption{Exactitud según hiperparámetros}
     \label{fig:entropy}
 \end{figure}
+\newpage
 De estos experimentos se desprende que el mejor modelo es el siguiente:
-\\
-Atributos : 121
-Profundidad : 9
-Criterio de impureza : entropy
-Exactitud media : 0.7733
-\\
-Se procede a entrenar el modelo en todo el conjunto desarrollo según los hiperparámetros seleccionados. Se realizan predicciones en el conjunto held-out y se observa la siguiente
-performance: exactitud = 0.7627
+\begin{itemize}
+    \item Atributos : 121
+    \item Profundidad : 9
+    \item Criterio de impureza : entropy
+    \item Exactitud media : 0.7733
+\end{itemize}
+Posteriormente, se procedió a entrenar el modelo en todo el conjunto de desarrollo según los hiperparámetros seleccionados. Se realizaron predicciones en el conjunto held-out y se observó la siguiente
+performance: \textbf{exactitud = 0.7627}
 
 \begin{figure}[H] 
     \centering
@@ -223,28 +238,27 @@ performance: exactitud = 0.7627
     \label{fig:matriz}
 \end{figure}
 
-En la matriz de confusión se registran errores, siendo los mayores la clasificación de Y como T(25), la O como D(21) y la W como N(18)
+Por último, se registraron errores en la matriz de confusión (figura \ref{fig:matriz}), siendo los mayores la clasificación de Y como
+T(25), la O como D(21) y la W como N(18).
+\newpage
 \section*{Conclusión}
 Para el modelo KNN entrenado para clasificación binaria se obtuvo que con 15 atributos
-(293-307) y K = 1, la exactitud es del 0.99. Para los caracteres
+(293-307) y K = 1, la exactitud es del 0.995. Para los caracteres
 especificados este modelo muestra un muy buen desempeño. Esta exactitud es alcanzable por tratarse de dos caracteres muy distintos entre si, y posiblemente
- no pueda ser replicado con cualquier par de caracteres.
-
+no pueda ser replicado con cualquier par de caracteres.
+\newline
+\newline
 \indent Para el problema de Clasificación Multiclase, un árbol de decisión entrenado con los siguientes hiperparámetros:
-\\
-Atributos : 121
-Profundidad : 9
-Criterio de impureza : entropy
-Exactitud : 0.7627
-\\
+\begin{itemize}
+    \item Atributos : 121
+    \item Profundidad : 9
+    \item Criterio de impureza : entropy
+    \item Exactitud : 0.7627
+\end{itemize}
 Al evaluar en el conjunto held-out la exactitud obtenida(0.7627) se aproximó a la exactitud media obtenida al seleccionar el mejor modelo de los 
 experimentos(0.7733).
+\newline
 Se verifica la utilidad de la matriz de confusión para registrar los errores del modelo al clasificar caracteres
-parecidos entre si.
-
-
-
+parecidos entre sí.
 
 \end{document}
-
-0.7733
