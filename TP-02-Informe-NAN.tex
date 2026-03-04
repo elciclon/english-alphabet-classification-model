@@ -88,7 +88,7 @@ se pueden descartar los atributos de las primeras filas y columnas así como las
 \end{figure}
 
 En este dataset hay letras más fáciles de diferenciar que otras, por ejemplo, en la figura \ref{fig:letras_diferencias} se puede observar
-que las letras S y M son distinguibles ya que la S consta de líneas curvas mientras que la M de líneas rectas. En cambio las letras O y Q
+que las letras S y M son distinguibles entre sí, ya que la S consta de líneas curvas mientras que la M de líneas rectas. En cambio las letras O y Q
 son bastante similares siendo la tilde de la Q lo que principalmente las diferencia.
 
 \begin{figure}[H]
@@ -172,9 +172,7 @@ para este conjunto la cantidad de vecinos (K) que mejor exactitud tienen son 13,
 Se probaron modelos KNN con 7, 11 y 15 atributos y K = 5. Se observó que con 15 atributos (del rango 293-307) la exactitud es del 0.99.
 \newline
 Se decidió usar estos atributos para evaluar con distintos K. Se observa en la figura \ref{fig:exactitud_15atributos} que con K = 1 se alcanza la
-mayor exactitud (0.995). Es importante tener en cuenta que al usar este valor de K estamos sobreajustando el modelo a los datos de entrenamiento
-perdiendo generalización. Es posible que no obtenga la mayor exactitud usando otra semilla para dividir los datos (en train y test)
-o si se cambia la proporción de los conjuntos (30\% para test en lugar de 20\%, por ejemplo).
+mayor exactitud (0.995) sobre el subconjunto de test.
 \begin{figure}[H] 
     \centering
     \includegraphics[width=0.8\textwidth]{3atributos_distintosK.png}
@@ -226,7 +224,7 @@ De estos experimentos se desprende que el mejor modelo es el siguiente:
     \item Atributos : 121
     \item Profundidad : 9
     \item Criterio de impureza : entropy
-    \item Exactitud media : 0.7733
+    \item Exactitud media en validación cruzada : 0.7733
 \end{itemize}
 Posteriormente, se procedió a entrenar el modelo en todo el conjunto de desarrollo según los hiperparámetros seleccionados. Se realizaron predicciones en el conjunto held-out y se observó la siguiente
 performance: \textbf{exactitud = 0.7627}
@@ -253,7 +251,7 @@ no pueda ser replicado con cualquier par de caracteres.
     \item Atributos : 121
     \item Profundidad : 9
     \item Criterio de impureza : entropy
-    \item Exactitud : 0.7627
+    \item Exactitud sobre held-out : 0.7627
 \end{itemize}
 Al evaluar en el conjunto held-out la exactitud obtenida(0.7627) se aproximó a la exactitud media obtenida al seleccionar el mejor modelo de los 
 experimentos(0.7733).
