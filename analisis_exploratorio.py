@@ -318,7 +318,7 @@ for c in criterios:
     plt.grid(True)
     plt.show()
 
-#%% Definir el mejor modelo según los resultados
+    #%% Definir el mejor modelo según los resultados
 mejor_profundidad = 9
 mejores_atributos = 121
 criterio_impureza = "entropy"
